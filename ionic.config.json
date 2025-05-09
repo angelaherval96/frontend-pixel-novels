@@ -1,0 +1,8 @@
+{
+  "name": "FrontendPixelNovels",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite",
+  "id": "3f90817c"
+}
