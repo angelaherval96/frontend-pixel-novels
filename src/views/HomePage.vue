@@ -9,8 +9,8 @@
         </ion-card-header>
         <ion-card-content>
           <p>Descubre y lee novelas visuales únicas.</p>
-          <ion-button color="primary">
-            <router-link :to="{name: 'Novels'}">Explorar novelas</router-link>
+          <ion-button class="customBtn" routerLink="/novels" expand="full">
+            Explorar novelas
           </ion-button>
         </ion-card-content>
        </div>
@@ -77,9 +77,9 @@ ion-card-title {
   font-weight: bold;
 }
 
-a{
-  text-decoration: none;
-  color: var(--ion-color-text);
+.customBtn {
+  --color: var(--ion-color-text);
+  --background: var(--ion-color-primary);
 }
   
 </style>
