@@ -6,7 +6,7 @@
             </ion-card-header>
             <ion-card-content>
             <swiper :initialSlide=0 :speed=400 :slidesPerView=1.2 :spaceBetween=10 :centeredSlides=true pager="true">
-                <swiper-slide v-for="(novel, idx) in novels" :key="novel.id">
+                <swiper-slide v-for="(novel, idx) in props.novels" :key="novel.id">
                     <ion-card :style="{ backgroundColor: colors[idx % colors.length] }">
                         <ion-card-header>
                         <ion-card-title>{{ novel.title }}</ion-card-title>
@@ -14,7 +14,7 @@
                         <ion-card-content>
                         {{ novel.description }}
                         {{ novel.language }}
-                        <img :src="novel.cover" alt="Cover Image" style="width: 100%; height: auto; border-radius: 10px;">
+                        <img :src="novel.cover" alt="Cover" style="width: 100%; height: auto; border-radius: 10px;">
                         </ion-card-content>
                     </ion-card>
                 </swiper-slide>
@@ -26,21 +26,25 @@
 
 <script setup lang="ts">
 import { IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent} from '@ionic/vue';
-import defineProps from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
+import type { INovel } from '@/interfaces/INovel';
 
 const props = defineProps<{
-    novels: Array<{id: number, title: string, description: string, language: string, cover: string}>;
+     novels: INovel[];
 }>();
 
-const slideOpts = {
-    initialSlide: 0,
-    speed: 400,
-    slidesPerView: 1.2,
-    spaceBetween: 10,
-    centeredSlides: true,
-};
+// defineProps<{
+//     novels: INovel[];
+// }>();
+
+// const slideOpts = {
+//     initialSlide: 0,
+//     speed: 400,
+//     slidesPerView: 1.2,
+//     spaceBetween: 10,
+//     centeredSlides: true,
+// };
 
 const colors = ['#ffe082', '#b3e5fc', '#c8e6c9', '#f8bbd0'];
 </script>

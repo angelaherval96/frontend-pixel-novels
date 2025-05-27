@@ -22,15 +22,20 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonSlides, IonSlide } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton} from '@ionic/vue';
 import banner from '@/assets/images/banner.jpeg';
 import Carousel from '@/components/Carousel.vue';
-
+import type { INovel } from '@/interfaces/INovel';
 import { ref, onMounted } from 'vue';
-const novels = ref<Novel[]>([])
+
+//const novels = ref<INovel[]>([]);
+const novels = ref<{ novels: INovel[] }>({ novels: [] });
+// const props = defineProps<{
+//   novels: INovel[];
+// }>();
 
 onMounted(async () => {
-  const response = await fetch('http://localhost:8000/api/novels'); // Replace with your API endpoint
+  const response = await fetch('http://localhost:8000/api/novels');
   if (response.ok) {
     const result = await response.json();
     novels.value = result.data;
@@ -38,7 +43,7 @@ onMounted(async () => {
   } else {
     console.error('Failed to fetch novels');
   }
-})
+});
 </script>
 
 <style scoped>
