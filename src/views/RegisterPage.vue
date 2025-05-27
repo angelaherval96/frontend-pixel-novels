@@ -9,17 +9,35 @@
           <form @submit.prevent="register" class="formulario">
             <ion-item>
               <ion-label>Nombre de usuario</ion-label>
-              <ion-input type="text" class="ion-padding" required></ion-input>
+              <ion-input v-model="form.name" type="text" class="ion-padding" required></ion-input>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Correo electrónico</ion-label>
-              <ion-input type="email" class="ion-padding" required></ion-input>
+              <ion-input v-model="form.email" type="email" class="ion-padding" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Rol</ion-label>
+              <ion-select v-model="form.role" required>
+                <br>
+                <ion-select-option value="user">Usuario</ion-select-option>
+                <ion-select-option value="creator">Creador</ion-select-option>
+                <ion-select-option value="admin">Admin</ion-select-option>
+              </ion-select>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Contraseña</ion-label>
-              <ion-input type="password" class="ion-padding" required></ion-input>
+              <br>
+              <p class="password-rules">La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una minúscula, un número y un carácter especial (@$!%*?&).</p>
+              <ion-input v-model="form.password" type="password" class="ion-padding" required></ion-input>
             </ion-item>
+            <ion-item>
+              <ion-label position="floating">Confirmar Contraseña</ion-label>
+              <ion-input v-model="form.password_confirmation" type="password" required></ion-input>
+            </ion-item>
+            
             <ion-button expand="full" type="submit" class="customBtn">Registrarse</ion-button>
+          
+            <ion-text color="danger" v-if="errorMessage"><p>{{ errorMessage }}</p></ion-text>
           </form>
         </ion-card-content>
       </ion-card>
@@ -28,37 +46,45 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonSelect, IonSelectOption, IonText } from '@ionic/vue';
 import { ref } from 'vue';
+
+const errorMessage = ref('');
 
 const form = ref({
   name: '',
   email: '',
-  role: '',
-  password: ''
+  role: 'user',
+  password: '',
+  password_confirmation: ''
 });
 
 const register = async () => {
   try {
+    console.log('Datos enviados:', form.value);
     const response = await fetch('http://localhost:8000/api/register', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify(form.value)
     });
 
+    const data = await response.json();
+
     if (response.ok) {
-      const data = await response.json();
-      console.log('Registration successful:', data);
+      console.log('Registro exitoso', data);
+      errorMessage.value = '';
      
     } else {
-      const errorData = await response.json();
-      console.error('Registration failed:', errorData);
+      console.error('Registro fallido', data);
+      errorMessage.value = data.message || 'Error al registrar. Por favor, inténtalo de nuevo.';
       
     }
   } catch (error) {
-    console.error('Error during registration:', error);
+    console.error('Error durante el registro', error);
+    errorMessage.value = 'Error de conexión. Por favor, inténtalo de nuevo más tarde.';
   }
 };
 </script>
@@ -117,5 +143,8 @@ const register = async () => {
     justify-content: center;
     align-items: center;
     width: 100%;
+  }
+  ion-select {
+    margin: 15px 0;
   }
 </style>
