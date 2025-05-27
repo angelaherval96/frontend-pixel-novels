@@ -48,6 +48,8 @@
 <script setup lang="ts">
 import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonSelect, IonSelectOption, IonText } from '@ionic/vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const errorMessage = ref('');
 
@@ -76,6 +78,8 @@ const register = async () => {
     if (response.ok) {
       console.log('Registro exitoso', data);
       errorMessage.value = '';
+      //Redirige al usuario a la página de inicio de sesión
+      router.push({ name: 'Login' });
      
     } else {
       console.error('Registro fallido', data);
