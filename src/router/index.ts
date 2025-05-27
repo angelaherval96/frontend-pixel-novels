@@ -48,6 +48,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
+        name: 'NovelsPage',
         component: NovelsPage
       },
       {
@@ -79,6 +80,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
+        name: 'ProfilePage',
         component: ProfilePage
       },
       {

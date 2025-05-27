@@ -21,6 +21,7 @@ import { IonFooter, IonTitle, IonToolbar } from '@ionic/vue';
 import { logoLinkedin } from 'ionicons/icons';
 import { logoGithub } from 'ionicons/icons';
 import { mailOutline } from 'ionicons/icons';
+
 </script>
 
 <style scoped>

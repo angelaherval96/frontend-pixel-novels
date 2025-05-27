@@ -8,11 +8,13 @@
       </ion-header>
       <ion-content class="ion-padding">
         <div id="rutas">
-          <router-link :to="{name:'Home'}">HomePage</router-link>
-          <router-link :to="{name:'Login'}">LoginPage</router-link>
-          <router-link :to="{name:'Register'}">RegisterPage</router-link>
-          <router-link :to="{name:'Profile'}">ProfilePage</router-link>
-          <router-link :to="{name:'Novels'}">NovelsLayout</router-link>
+          <router-link :to="{name:'Home'}">Inicio</router-link>
+          <router-link :to="{name:'Login'}">Login</router-link>
+          <router-link :to="{name:'Register'}">Registro</router-link>
+          <router-link :to="{name:'Profile'}">Perfil</router-link>
+          <router-link :to="{name:'Novels'}">Novelas</router-link>
+          <router-link :to="{name:'Statistics'}">Estadísticas</router-link>
+          <router-link :to="{name:'Settings'}">Configuración</router-link>
         </div>
       </ion-content>
     </ion-menu>
