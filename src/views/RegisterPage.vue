@@ -38,6 +38,8 @@
             <ion-button expand="full" type="submit" class="customBtn">Registrarse</ion-button>
           
             <ion-text color="danger" v-if="errorMessage"><p>{{ errorMessage }}</p></ion-text>
+
+            <ion-text color="text"><p>¿Ya tienes cuenta? <a @click="goLogin()">Iniciar sesión.</a></p></ion-text>
           </form>
         </ion-card-content>
       </ion-card>
@@ -49,7 +51,13 @@
 import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonSelect, IonSelectOption, IonText } from '@ionic/vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
+
+const goLogin = () => {
+       router.push({name:'Login'});
+    }
+   
 
 const errorMessage = ref('');
 
@@ -150,5 +158,9 @@ const register = async () => {
   }
   ion-select {
     margin: 15px 0;
+  }
+  a:hover {
+    color: var(--ion-color-primary);
+    text-decoration: underline;
   }
 </style>
