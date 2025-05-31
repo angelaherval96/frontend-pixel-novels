@@ -27,22 +27,21 @@ import banner from '@/assets/images/banner.jpeg';
 import Carousel from '@/components/Carousel.vue';
 import type { INovel } from '@/interfaces/INovel';
 import { ref, onMounted } from 'vue';
+import NovelService from '@/services/NovelService';
 
-//const novels = ref<INovel[]>([]);
+
 const novels = ref<{ novels: INovel[] }>({ novels: [] });
-// const props = defineProps<{
-//   novels: INovel[];
-// }>();
 
 onMounted(async () => {
-  const response = await fetch('http://localhost:8000/api/novels');
-  if (response.ok) {
-    const result = await response.json();
-    novels.value = result.data;
-    console.log('Novels fetched successfully:', novels.value);
-  } else {
-    console.error('Failed to fetch novels');
+  try {
+    const response = await NovelService.obtenerNovelas();
+    novels.value = response.data;
+  } catch (error) {
+    console.error('Error al obtener las novelas', error);  
+    
   }
+ 
+  console.log('Novelas obtenidas correctamente:', novels.value);
 });
 </script>
 
