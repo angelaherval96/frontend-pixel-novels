@@ -6,7 +6,7 @@
           <ion-card-title>Iniciar Sesión</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <form @submit.prevent="login" class="formulario">
+          <form @submit.prevent="makeLogin" class="formulario">
             <ion-item>
               <ion-label position="floating">Correo electrónico</ion-label>
               <ion-input v-model="form.email" type="email" class="ion-padding" required></ion-input>
@@ -16,10 +16,14 @@
               <ion-input v-model="form.password" type="password" class="ion-padding" required></ion-input>
             </ion-item>
 
-            <ion-button expand="full" type="submit" class="customBtn">Iniciar Sesión</ion-button>
-          
+            <ion-button expand="full" type="submit" class="customBtn" :disabled="isLoading">
+              <ion-spinner v-if="isLoading" name="crescent"></ion-spinner>
+              <span v-else>Iniciar Sesión</span>
+            </ion-button>
+
             <ion-text color="danger" v-if="errorMessage"><p>{{ errorMessage }}</p></ion-text>
           </form>
+          <ion-text color="text"><p>¿No tienes cuenta? <a @click="goRegister()">Regístrate.</a></p></ion-text>
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -27,11 +31,16 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonText } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonText, IonSpinner } from '@ionic/vue';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-const router = useRouter();
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/useAuthStore';
 
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
+
+const isLoading = ref(false);
 const errorMessage = ref('');
 
 const form = ref({
@@ -39,34 +48,28 @@ const form = ref({
   password: ''
 });
 
-const login = async () => {
-  try {
-    console.log('Datos enviados:', form.value);
-    const response = await fetch('http://localhost:8000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(form.value)
-    });
-    //Comprueba si la respuesta es correcta
-    const data = await response.json();
+const goRegister = () => {
+  router.push({name:'Register'});
+}
+  
 
-    if (response.ok) {
-      console.log('Inicio de sesión exitoso', data);
-      errorMessage.value = '';
-      //Redirige al usuario a la página de inicio de sesión
-      router.push({ name: 'Home' });
-     
-    } else {
-      console.error('Inicio de sesión fallido', data);
-      errorMessage.value = data.message || 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
-      
-    }
-  } catch (error) {
-    console.error('Error durante el inicio de sesión', error);
-    errorMessage.value = 'Error de conexión. Por favor, inténtalo de nuevo más tarde.';
+const makeLogin = async () => {
+  try {
+    isLoading.value = true;
+    errorMessage.value= '';
+    
+    //Llama al método login del store.
+    await authStore.login(form.value);
+
+    //Redirige al usuario si hay redirect en la URL va ahí, si no va a Home
+    const redirectPath = route.query.redirect as string | undefined;
+    router.replace(redirectPath || { name: 'Home' });
+    
+  } catch (error:any) {
+    //Muestra el mensaje de error del backend o uno genérico
+    errorMessage.value = error.response?.data?.message || error.message || 'Error al iniciar sesión. Por favor, inténtalo de nuevo.'
+  } finally{
+    isLoading.value = false;
   }
 };
 </script>

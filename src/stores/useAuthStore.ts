@@ -29,8 +29,8 @@ export const useAuthStore = defineStore('auth', {
       if (storedToken) {
         this.token = storedToken;
         this.isAuthenticated = true;
-        // Opcional: Intenta obtener los datos del usuario si hay un token
-        // await this.fetchUser();
+        // Obtiene los datos del usuario si hay un token
+        await this.fetchUser();
       }
     },
     //Acción para hacer login, recibe credenciales y llama al backend

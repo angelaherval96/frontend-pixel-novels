@@ -73,8 +73,8 @@ const form = ref({
 
 
 const goLogin = () => {
-       router.push({name:'Login'});
-    }
+  router.push({name:'Login'});
+}
    
 
 const handleRegister = async () => {
