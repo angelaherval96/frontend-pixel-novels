@@ -4,6 +4,9 @@ import router from './router';
 
 import { IonicVue } from '@ionic/vue';
 
+import { createPinia } from 'pinia';
+import {useAuthStore} from './stores/useAuthStore';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
 
@@ -37,10 +40,17 @@ import './theme/variables.css';
 // Swiper styles
 import 'swiper/css';
 
+
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .use(createPinia()); //Para que use Pinia
 
-router.isReady().then(() => {
-  app.mount('#app');
+
+//Crea una instancia del store de autenticación y se llama a la función init (para comprobar si ya hay token guardado), después se monta la app.
+const authStore = useAuthStore();
+authStore.init().then(() => {
+  router.isReady().then(() => {
+    app.mount('#app');
+  });
 });

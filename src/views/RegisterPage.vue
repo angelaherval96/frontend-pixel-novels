@@ -6,7 +6,7 @@
           <ion-card-title>Crear cuenta</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <form @submit.prevent="register" class="formulario">
+          <form @submit.prevent="handleRegister" class="formulario">
             <ion-item>
               <ion-label>Nombre de usuario</ion-label>
               <ion-input v-model="form.name" type="text" class="ion-padding" required></ion-input>
@@ -35,7 +35,10 @@
               <ion-input v-model="form.password_confirmation" type="password" required></ion-input>
             </ion-item>
             
-            <ion-button expand="full" type="submit" class="customBtn">Registrarse</ion-button>
+            <ion-button expand="full" type="submit" class="customBtn" :disabled="isLoading">
+              <ion-spinner v-if="isLoading" name="crescent"></ion-spinner>
+              <span v-else>Registrarse</span>
+            </ion-button>
           
             <ion-text color="danger" v-if="errorMessage"><p>{{ errorMessage }}</p></ion-text>
 
@@ -48,17 +51,16 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonSelect, IonSelectOption, IonText } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonInput,IonButton, IonLabel, IonSelect, IonSelectOption, IonText, IonSpinner, useKeyboard } from '@ionic/vue';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const router = useRouter();
+const route = useRoute(); //Para el redirect después del login
+const authStore = useAuthStore();
 
-const goLogin = () => {
-       router.push({name:'Login'});
-    }
-   
-
+const isLoading = ref(false);
 const errorMessage = ref('');
 
 const form = ref({
@@ -69,34 +71,34 @@ const form = ref({
   password_confirmation: ''
 });
 
-const register = async () => {
-  try {
-    console.log('Datos enviados:', form.value);
-    const response = await fetch('http://localhost:8000/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(form.value)
-    });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      console.log('Registro exitoso', data);
-      errorMessage.value = '';
-      //Redirige al usuario a la página de inicio de sesión
-      router.push({ name: 'Login' });
-     
-    } else {
-      console.error('Registro fallido', data);
-      errorMessage.value = data.message || 'Error al registrar. Por favor, inténtalo de nuevo.';
-      
+const goLogin = () => {
+       router.push({name:'Login'});
     }
-  } catch (error) {
-    console.error('Error durante el registro', error);
-    errorMessage.value = 'Error de conexión. Por favor, inténtalo de nuevo más tarde.';
+   
+
+const handleRegister = async () => {
+  isLoading.value = true; //Activa el spinner
+  errorMessage.value = '';//Limpia mensajes de error anteriores
+
+  try {
+    console.log('Datos de registro enviados al store:', form.value);
+    
+    //Llama a la función register del store de autenticación, pasando los datos del formulario
+    await authStore.register(form.value);
+
+    console.log('Registro exitoso a través del store');
+
+    //Si la URL tiene redirect redirige ahí, si no, redirige al home
+    const redirectPath = route.query.redirect as string | undefined;
+    router.replace(redirectPath || { name: 'Home'});
+
+  } catch (error:any) {
+    console.error('Error durante el registro (componente):', error);
+    errorMessage.value = error.response?.data?.message || error.message || 'Error al registrar. Verifique los datos.';
+  }finally {
+    //Desactiva el spinner
+    isLoading.value = false;
   }
 };
 </script>
