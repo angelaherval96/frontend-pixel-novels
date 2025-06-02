@@ -1,16 +1,17 @@
+import { IApiResponse } from "@/interfaces/IApiResponse";
+import { INovel } from "@/interfaces/INovel";
+import api from "./ApiService";
+
+
 export default class NovelService{
     
-    static async obtenerNovelas(){ //Datos que se obtendrán de la BD
-        const url = 'http://127.0.0.1:8000/api/novels';
-        const response = await fetch(url, {
-            method: 'GET',
-            headers:{
-                'Accept': 'application/json' //Siempre que sea un json
-            }
-        })
-        if (!response.ok) throw new Error('Error al obtener las novelas');
-        const data = await response.json();
-        return data;
+    static async obtenerNovelas():Promise<IApiResponse<any>>{ //Datos que se obtendrán de la BD
+        const response = await api.get('/novels'); //Se hace la petición a la API
+        return response.data; //Se devuelve la respuesta de la API
     } 
-}
- 
+
+    static async createNovel(dataNovel: INovel): Promise<IApiResponse<any>>{
+        const response = await api.post('/novels', dataNovel); 
+        return response.data; 
+    }
+ }
