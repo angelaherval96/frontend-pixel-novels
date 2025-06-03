@@ -1,13 +1,11 @@
 import { IChapter } from "./IChapter";
 import { ICreatorNovel } from "./ICreatorNovel";
+import { INovel } from "./INovel";
 
-export interface INovelDetail{
-    id: number;
-    title: string;
-    description: string;
-    cover: string;
-    creator: ICreatorNovel;
-    chapters: IChapter[];
-    language: string;
+export interface INovelDetail extends INovel{
+    creator?: ICreatorNovel;
+    chapters?: IChapter[];
     created_at: string;
 }
+
+

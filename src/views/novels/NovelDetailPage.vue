@@ -3,51 +3,51 @@
     <IonButtons slot="start">
       <IonBackButton default-href="/novels"></IonBackButton>
     </IonButtons>
-    <IonTitle>{{ novel && NovelService.title ? NovelService.title : 'Detalle novela' }}</IonTitle>
+    <IonTitle>{{ novel?.title || 'Detalle novela' }}</IonTitle>
  
-    <div v-if="isLoading" class="containerSpinner">
+    <div v-if="isLoading" class="containerSpinner ion-text-center ion-padding-top">
       <IonSpinner name="crescent"></IonSpinner>
       <p>Cargando detalles de la novela...</p>
     </div>
 
-    <div v-if="error" class="containerError ion-padding">
-      <IonIcon :icon="alertCircleOutline" color="danger"></IonIcon>
+    <div v-if="error && !isLoading" class="containerError ion-padding ion-text-center">
+      <IonIcon :icon="alertCircleOutline" color="danger" style="font-size:  2em;"></IonIcon>
       <p>Error al cargar la novela: {{ error }}</p>
       <IonButton @click="getNovelDetails">Reintentar</IonButton>
     </div>
     
     <div v-if="novel && !isLoading && !error">
-      <IonImg :src="NovelService.cover || 'https://enlace'" :alt="'Portada de ' + novel.title"></IonImg>
+      <IonImg :src="novel.cover || 'https://enlace'" :alt="'Portada de ' + novel.title"></IonImg>
     </div>
 
-    <h1 class="ion-text-center">{{ novel.title }}</h1>
+    <h1 class="ion-text-center">{{ novel?.title }}</h1>
 
     <IonCard>
       <IonCardContent>
-        <p><strong>Creador:</strong>{{ novel.creator?.name || 'Desconocido' }}</p>
-        <p><strong>Descripción:</strong>{{ novel.description || 'No disponible' }}</p>
-        <p><strong>Idioma:</strong>{{ novel.language || 'No especificado' }}</p>
-         <p><strong>Fecha de Publicación:</strong>{{ formatDate(novel.created_at) }}</p>
+        <p><strong>Creador:</strong>{{ novel?.creator?.name || 'Desconocido' }}</p>
+        <p><strong>Descripción:</strong>{{ novel?.description || 'No disponible' }}</p>
+        <p><strong>Idioma:</strong>{{ novel?.language || 'No especificado' }}</p>
+        <p><strong>Fecha de Publicación:</strong>{{ formatDate(novel?.created_at) }}</p>
         </IonCardContent>
     </IonCard>
 
     <h3 class="ion-margin-top">Capítulos</h3>
-    <IonList v-if="novel.chapters && novel.chapters.length > 0">
+    <IonList v-if="novel?.chapters && novel.chapters.length > 0">
         <IonItem v-for="chapter in novel.chapters" :key="chapter.id">
-            <IonButton @click="goToChapter(novel.id, chapter.id, chapter.title)"></IonButton>
+            <IonButton @click="goToChapter(novel.id, chapter.id, chapter.title)" detail="true"></IonButton>
             <IonLabel>{{ chapter.title || 'Capítulo sin título' }}</IonLabel>
         </IonItem>
     </IonList>
     <p v-else> No hay capítulos disponibles para esta novela.</p>
 
     <div class="ion-margin-top">
-      <IonButton expand="block" @click="addToFavourites(novel.id)" :disabled="isFavoriting">
+      <IonButton expand="block" @click="() => { if (novel && novel.id !== undefined) addToFavourites(novel.id); }" :disabled="isFavoriting">
         <IonIcon slot="start" :icon="heartOutline"></IonIcon>
         Añadir a Favoritos
         <IonSpinner v-if="isFavoriting" name="dots" slot="end"></IonSpinner>
       </IonButton>
 
-      <IonButton expand="block" color="secondary" @click="startReading(novel.id, novel.chapters)" class="ion-margin-top">
+      <IonButton expand="block" color="secondary" @click="startReading(novel!.id, novel!.chapters)" class="ion-margin-top">
         <IonIcon slot="start" :icon="playCircleOutline"></IonIcon>
         Empezar a leer
       </IonButton>
@@ -67,6 +67,7 @@ import { ICreatorNovel } from '@/interfaces/ICreatorNovel';
 import { INovelDetail } from '@/interfaces/INovelDetail';
 import NovelService from '@/services/NovelService';
 import api from '@/services/ApiService';
+import { IChapterListItem } from '@/interfaces/IChapterListItem';
 
 const route = useRoute();
 const router = useRouter();
@@ -124,7 +125,7 @@ const formatDate = (dateString?: string) => {
 }
 
 //Función para añadir a favoritos
-const addToFavourites = async (id:number) => {
+const addToFavourites = async (idNovela:number) => {
   if (!authStore.token){
     alert('Debes iniciar sesión para añadir a favoritos.')
     router.push({ name: 'Login' });
@@ -132,7 +133,7 @@ const addToFavourites = async (id:number) => {
   }
   isFavoriting.value = true;
   try {
-    const apiResponse = await NovelService.addNovelFavourites(id.toString());
+    const apiResponse = await NovelService.addNovelFavourites(idNovela.toString());
     if (apiResponse.success){
       alert(apiResponse.message || '¡Añadido a favoritos!');
     }else{
@@ -163,3 +164,40 @@ const startReading = (currentNovelId: number, chapters?: IChapterListItem[]) => 
 }
 
 </script>
+
+
+<style scoped>
+  ion-img{
+    width: 100%; 
+    max-width: 500px; 
+    margin: 0 auto 16px auto; 
+    display: block;
+    border-radius: 8px
+  }
+  .containerSpinner, .containerError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh; 
+}
+.containerError ion-icon {
+  font-size: 3em; /* Aumenta tamaño del icono de error */
+  margin-bottom: 10px;
+}
+ion-card-content p {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+h1 {
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+h3 {
+  margin-top: 24px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--ion-color-step-200, #cccccc);
+  padding-bottom: 6px;
+}
+</style>
