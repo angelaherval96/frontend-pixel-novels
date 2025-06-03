@@ -1,6 +1,6 @@
 export interface IChapterListItem{
     id: number;
-    title: string | null;
+    title: string;
     novel_id: number;
     order?: number;
 }
