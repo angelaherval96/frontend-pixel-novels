@@ -34,20 +34,21 @@
     <h3 class="ion-margin-top">Capítulos</h3>
     <IonList v-if="novel?.chapters && novel.chapters.length > 0">
         <IonItem v-for="chapter in novel.chapters" :key="chapter.id">
-            <IonButton @click="goToChapter(novel.id, chapter.id, chapter.title)" detail="true"></IonButton>
+            <IonButton @click="goToChapter(novel?.id, chapter.id)" detail="true">Leer Capítulo</IonButton>
             <IonLabel>{{ chapter.title || 'Capítulo sin título' }}</IonLabel>
         </IonItem>
     </IonList>
     <p v-else> No hay capítulos disponibles para esta novela.</p>
 
     <div class="ion-margin-top">
+      <!-- Llama a la función para añadir a favoritos solo si novela y su id están definidos -->
       <IonButton expand="block" @click="() => { if (novel && novel.id !== undefined) addToFavourites(novel.id); }" :disabled="isFavoriting">
         <IonIcon slot="start" :icon="heartOutline"></IonIcon>
         Añadir a Favoritos
         <IonSpinner v-if="isFavoriting" name="dots" slot="end"></IonSpinner>
       </IonButton>
 
-      <IonButton expand="block" color="secondary" @click="startReading(novel!.id, novel!.chapters)" class="ion-margin-top">
+      <IonButton expand="block" color="secondary" @click="() => { if (novel && novel.id !== undefined && novel.chapters) startReading(novel.id, novel.chapters); }" class="ion-margin-top">
         <IonIcon slot="start" :icon="playCircleOutline"></IonIcon>
         Empezar a leer
       </IonButton>
@@ -149,17 +150,34 @@ const addToFavourites = async (idNovela:number) => {
 }
 
 //Función para ir a los capítulos
-const goToChapter = (currentNovelId:number, chapterId: number, chapterTitle?: string) => {
+const goToChapter = (currentNovelId:number | undefined, chapterId: number | undefined) => {
+  //Comprueba que los ids son números antes de usarlos
+  if (typeof currentNovelId !== 'number' || typeof chapterId !== 'number') {
+    console.error("ID de novela o capítulo no válido", { currentNovelId, chapterId });
+    alert('No se puedo cargar el capítulo. Id de novela o capítulo no válido.');
+    return;
+  }
+  
   router.push({ name: 'ChapterReader', params: { id: currentNovelId.toString()}, query: { chapter: chapterId.toString()}});
 }
 
 //Función para empezar a leer
-const startReading = (currentNovelId: number, chapters?: IChapterListItem[]) => {
+const startReading = (currentNovelId: number, chapters: IChapterListItem[]) => {
+  // Comprueba que el array de capítulos existe y no está vacío
   if (chapters && chapters.length > 0) {
-    goToChapter(currentNovelId, chapters[0].id, chapters[0].title);
-
+    const firstChapter = chapters[0];
+    // Verifica que el primer capítulo es un objeto válido y tiene un 'id' numérico
+    if (firstChapter && typeof firstChapter.id === 'number') {
+      goToChapter(currentNovelId, firstChapter.id);
+    } else {
+      // Si el primer capítulo no es válido o no tiene ID, navega al lector general de la novela
+      console.warn(`Primer capítulo inválido o sin ID para la novela ${currentNovelId}. Navegando al lector general.`);
+      router.push({ name: 'ChapterReader', params: { id: currentNovelId.toString() } });
+    }
   } else {
-    router.push({ name: 'ChapterReader', params: { id: currentNovelId.toString()}});
+    // Si no hay capítulos, navega al lector general de la novela
+    console.warn(`No hay capítulos para la novela ${currentNovelId}. Navegando al lector general.`);
+    router.push({ name: 'ChapterReader', params: { id: currentNovelId.toString() } });
   }
 }
 
