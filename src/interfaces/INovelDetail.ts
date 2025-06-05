@@ -5,7 +5,7 @@ import { INovel } from "./INovel";
 
 export interface INovelDetail extends INovel{
     creator?: ICreatorNovel;
-    chapters?: IChapterListItem[];
+    chapters?: IChapter[];
     created_at: string;
 }
 

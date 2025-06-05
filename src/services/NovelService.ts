@@ -2,6 +2,9 @@ import { IApiResponse } from "@/interfaces/IApiResponse";
 import { INovel } from "@/interfaces/INovel";
 import api from "./ApiService";
 import { INovelDetail } from "@/interfaces/INovelDetail";
+import { IChapter} from "@/interfaces/IChapter";
+import { ICreatorNovel } from "@/interfaces/ICreatorNovel";
+
 
 
 export default class NovelService{
@@ -25,6 +28,24 @@ export default class NovelService{
     //Función para agregar favoritos. Teniendo en cuenta el backend, en este caso T (tipo de data), es {novel: INovelDetail}
     static async addNovelFavourites(id:string): Promise<IApiResponse<{  novel?: INovelDetail }>>{
         const response = await api.post<IApiResponse<{ novel: INovelDetail}>>(`/novels/${id}/favourite`);
+        return response.data;
+    }
+
+    //Función para eliminar favoritos. Teniendo en cuenta el backend, en este caso T (tipo de data), es {novel: INovelDetail}
+    static async removeNovelFavourites(id:string): Promise<IApiResponse<{ novel?: INovelDetail }>>{
+        const response = await api.delete<IApiResponse<{ novel: INovelDetail}>>(`/novels/${id}/favourite`);
+        return response.data;
+    }
+
+    //Función para obtener los detalles de una novela, incluyendo los capítulos.
+    static async getNovelDetails(id: string): Promise<IApiResponse<{ novel: INovelDetail, chapters: IChapter[] }>>{
+        const response = await api.get<IApiResponse<{ novel: INovelDetail, chapters: IChapter[] }>>(`/novels/${id}/details`);
+        return response.data;
+    }
+
+    //Función para obtener el contenido de un capítulo específico de una novela.
+    static async getChapterContent(novelId: string, chapterId: string): Promise<IApiResponse<{ chapter: IChapter }>>{
+        const response = await api.get<IApiResponse<{ chapter: IChapter }>>(`/novels/${novelId}/chapters/${chapterId}`);
         return response.data;
     }
  }
