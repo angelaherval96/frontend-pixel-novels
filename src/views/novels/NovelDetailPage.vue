@@ -162,7 +162,7 @@ const goToChapter = (currentNovelId:number | undefined, chapterId: number | unde
 }
 
 //Función para empezar a leer
-const startReading = (currentNovelId: number, chapters: IChapterListItem[]) => {
+const startReading = (currentNovelId: number, chapters: IChapter[]) => {
   // Comprueba que el array de capítulos existe y no está vacío
   if (chapters && chapters.length > 0) {
     const firstChapter = chapters[0];
@@ -200,7 +200,7 @@ const startReading = (currentNovelId: number, chapters: IChapterListItem[]) => {
   height: 50vh; 
 }
 .containerError ion-icon {
-  font-size: 3em; /* Aumenta tamaño del icono de error */
+  font-size: 3em; 
   margin-bottom: 10px;
 }
 ion-card-content p {
