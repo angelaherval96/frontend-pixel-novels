@@ -69,6 +69,7 @@ import { INovelDetail } from '@/interfaces/INovelDetail';
 import NovelService from '@/services/NovelService';
 import api from '@/services/ApiService';
 import { IChapterListItem } from '@/interfaces/IChapterListItem';
+import FavouriteService from '@/services/FavouriteService';
 
 const route = useRoute();
 const router = useRouter();
@@ -134,7 +135,7 @@ const addToFavourites = async (idNovela:number) => {
   }
   isFavoriting.value = true;
   try {
-    const apiResponse = await NovelService.addNovelFavourites(idNovela.toString());
+    const apiResponse = await FavouriteService.addNovelFavourites(idNovela.toString());
     if (apiResponse.success){
       alert(apiResponse.message || '¡Añadido a favoritos!');
     }else{

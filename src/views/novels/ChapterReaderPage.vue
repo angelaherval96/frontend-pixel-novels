@@ -78,7 +78,7 @@ import ReadingService from '@/services/ReadingService';
   const isLoadingChapter = ref<boolean>(false);
 
   //Función para guardar el progreso de lectura
-  const saveReadingProgress = async (chapterId: string, progressValue: number) => {
+  const saveReadingProgress = async (chapterId: number, progressValue: number) => {
     //Solo se guarda el progreso si el usuario está autenticado
     if (!authStore.token){
       console.warn('No se puede guardar el progreso de lectura, usuario no autenticado.');
@@ -126,7 +126,7 @@ import ReadingService from '@/services/ReadingService';
   const goToNextChapter = () => { 
     if (currentChapterId.value){
       //Marca el capítulo actual como leído antes de navegar al siguiente
-      saveReadingProgress(currentChapterId.value, 100); 
+      saveReadingProgress(Number(currentChapterId.value), 100); 
     }
     navigateToChapter(nextChapterId.value); 
   }
