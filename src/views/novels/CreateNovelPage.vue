@@ -2,43 +2,19 @@
     <IonContent :fullscreen="true" class="ion-padding">
       <h1>Crear Nueva Novela</h1>
       <br>
-      <form @submit.prevent="sendForm">
-        <IonList>
-          <IonItem>
-            <IonInput label="Título" label-placemen="floating" v-model="dataNovel.title" type="text" required></IonInput>
-          </IonItem>
-
-          <IonItem>
-            <IonTextarea label="Descripción" label-placement="floating" v-model="dataNovel.description"></IonTextarea>
-          </IonItem>
-
-          <IonItem>
-            <IonSelect label="Idioma" label-placement="floating" v-model="dataNovel.language" placeholder="Selecciona un idioma" interface="action-sheet">
-              <IonSelectOption value="es">Español</IonSelectOption>
-              <IonSelectOption value="en">Inglés</IonSelectOption>
-              <IonSelectOption value="fr">Francés</IonSelectOption>
-              <IonSelectOption value="de">Alemán</IonSelectOption>
-            </IonSelect>
-          </IonItem>
-
-          <IonItem>
-            <IonInput label="URL de la portada" label-placement="floating" v-model="dataNovel.cover" type="url" placeholder="https://example.com/cover.jpg" required></IonInput>
-          </IonItem>
-        </IonList>
-
-        <IonButton expand="block" type="submit" class="ion-margin-top">Crear Novela</IonButton>
-      </form>
+      <NovelForm :initialData="dataNovel" textButton="Crear Novela" @onSubmit="sendForm"></NovelForm>
     </IonContent>
   
 </template>
 
 <script setup lang="ts">
-import { IonContent, IonList, IonSelect, IonTextarea, IonItem, IonInput, IonSelectOption, IonButton } from '@ionic/vue';
+import { IonContent } from '@ionic/vue';
 import NovelService from '@/services/NovelService';
 import { INovel } from '@/interfaces/INovel';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { IApiResponse } from '@/interfaces/IApiResponse';
+import NovelForm from '@/components/NovelForm.vue';
 // Creamos una variable que almanecenará los datos de la novela
 const dataNovel = ref<INovel>({
   title: '',
@@ -48,39 +24,35 @@ const dataNovel = ref<INovel>({
 });
 
 const router = useRouter();
+const isLoading = ref<boolean>(false); 
 
 //Función que se ejecuta al enviar el formulario.
-const sendForm = async ()=> {
+const sendForm = async (dataNovel: INovel)=> {
   //Se valida el título y la portada para que no estén vacíos
-  if (!dataNovel.value.title || !dataNovel.value.cover){
+  if (!dataNovel.title || !dataNovel.cover){
     console.error('Error: El título y la portada son obligatorios.');
     return;
   }
 
+  isLoading.value = true; // Cambia el estado de carga a verdadero
   try {
     //Llama al servicio para crear la novela, pasando los datos del formulario
-    const response = await NovelService.createNovel({
-      title: dataNovel.value.title,
-      description: dataNovel.value.description,
-      language: dataNovel.value.language,
-      cover: dataNovel.value.cover
-    });
-
+    const response = await NovelService.createNovel(dataNovel);
     //Si la respuesta es correcta se limpia el formulario y se redirige a la lista de novelas
     if (response.success){
-      console.log('¡Novela creada con éxito!', response.message);
-
-      dataNovel.value = {
+      alert('¡Novela creada con éxito!');
+      console.log(response.message);
+      router.push('/novels'); // Redirige a la lista de novelas,  pero revisar en un futuro para vista de novelas creadas
+      dataNovel = {
         title: '',
         description: '',
         language: '',
         cover: ''
       };
-      //Redirige a la lista de novelas, pero revisar en un futuro para vista de novelas creadas
-      router.push('/novels'); 
+      
       //Si no muestra un error
     }else {
-      console.error('Error al crear la novela:', response.message);
+      alert('Error al crear la novela: ' + response.message);
     }
   } catch (error:any) {
     console.error('Error al enviar el formulario:', error);
