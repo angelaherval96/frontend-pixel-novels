@@ -7,9 +7,9 @@
       <IonToolbar color="primary">
         <IonButtons slot="start">
           <IonButton routerLink="/profile">Mi perfil</IonButton> 
-          <IonButton routerLink="/favourites">Favoritos</IonButton>
-          <IonButton routerLink="/readings">Historial de Lectura</IonButton>
-          <IonButton routerLink="/settings">Configuración</IonButton>
+          <IonButton routerLink="/profile/favourites">Favoritos</IonButton>
+          <IonButton routerLink="profile/readings">Historial de Lectura</IonButton>
+          <IonButton routerLink="profile/settings">Configuración</IonButton>
           <IonButton @click="closeSesion">Cerrar Sesión</IonButton>
         </IonButtons>
       </IonToolbar>
