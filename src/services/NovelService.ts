@@ -75,4 +75,19 @@ export default class NovelService{
         const response = await api.put<IApiResponse<IChapter>>(`/novels/${novelId}/chapters/${chapterId}`, chapterData);
         return response.data;
     }
+
+    //Función para subir archivos multimedia (imágenes, audio, etc.)
+    static async uploadMedia(file: File): Promise<IApiResponse<{ url: string }>> {
+        //Se usa FormData para enviar archivos
+        const formData = new FormData();
+        formData.append('media_file', file); // 'media_file' es el nombre del campo que espera el backend, por lo que debe coincidir
+        //Axios detecta automáticamente el tipo de contenido como 'multipart/form-data' cuando se usa FormData
+        const response = await api.post<IApiResponse<{ url: string }>>('/chapters/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    }
+
 }  
