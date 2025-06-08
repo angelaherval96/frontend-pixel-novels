@@ -64,7 +64,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { IUser } from '@/interfaces/IUser';
 import { IChapter } from '@/interfaces/IChapter';
-import { ICreatorNovel } from '@/interfaces/ICreatorNovel';
 import { INovelDetail } from '@/interfaces/INovelDetail';
 import NovelService from '@/services/NovelService';
 import api from '@/services/ApiService';

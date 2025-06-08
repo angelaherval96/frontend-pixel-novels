@@ -1,10 +1,9 @@
 import { IChapter } from "./IChapter";
-import { IChapterListItem } from "./IChapterListItem";
-import { ICreatorNovel } from "./ICreatorNovel";
 import { INovel } from "./INovel";
+import { IUser } from "./IUser";
 
 export interface INovelDetail extends INovel{
-    creator?: ICreatorNovel;
+    creator?: IUser;
     chapters?: IChapter[];
     created_at: string;
 }

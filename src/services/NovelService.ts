@@ -36,4 +36,43 @@ export default class NovelService{
         const response = await api.get<IApiResponse<{ chapter: IChapter }>>(`/novels/${novelId}/chapters/${chapterId}`);
         return response.data;
     }
- }
+
+
+
+    //AÑADIDAS PARA EL DASHBOARD DE NOVELAS
+    //Función que devuelve una lista de novelas creadas por un usuario específico o todas si es el admin
+    static async getDashboardNovels():Promise<IApiResponse<{ novels: ICreatorNovel[] }>> {
+        const response = await api.get<IApiResponse<{ novels: ICreatorNovel[] }>>(`/dashboard/novels`);
+        return response.data;
+    }
+
+    //Función para eliminar una novela por su ID
+    static async deleteNovel(novelId: string): Promise<IApiResponse<null>> {
+        const response = await api.delete<IApiResponse<null>>(`/novels/${novelId}`);
+        return response.data;
+    }
+
+    //Función para actualizar una novela por su ID
+    static async updateNovel(novelId: string, dataNovel: INovel): Promise<IApiResponse<INovel>>{
+        const response = await api.put<IApiResponse<INovel>>(`/novels/${novelId}`, dataNovel);
+        return response.data;
+    }
+
+    //Función para eliminar un capítulo por su ID
+    static async deleteChapter(novelId: string, chapterId: string): Promise<IApiResponse<null>> {
+        const response = await api.delete<IApiResponse<null>>(`/novels/${novelId}/chapters/${chapterId}`);
+        return response.data;
+    }
+
+    //Función para crear un capítulo en una novela específica
+    static async createChapter(novelId: string, chapterData: Partial<IChapter>): Promise<IApiResponse<{chapter: IChapter}>> {
+        const response = await api.post<IApiResponse<{chapter: IChapter}>>(`/novels/${novelId}/chapters`, chapterData);
+        return response.data;
+    }
+
+    //Función para actualizar un capítulo en una novela específica
+    static async updateChapter(novelId: string, chapterId: string, chapterData: Partial<IChapter>): Promise<IApiResponse<IChapter>> {
+        const response = await api.put<IApiResponse<IChapter>>(`/novels/${novelId}/chapters/${chapterId}`, chapterData);
+        return response.data;
+    }
+}  
