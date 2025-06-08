@@ -71,10 +71,33 @@ const loadChapterData = async () => {
   }
 };
 
-const sendForm = async (formData: Partial<IChapter>) => {
+const sendForm = async (eventData: { formData: Partial<IChapter>, file?: File | null}) => {
+  
+  const { formData, file } = eventData;
   isSubmitting.value = true;
+
   try {
-    const response = await NovelService.updateChapter(novelId.toString(), chapterId.toString(), formData);
+    //Se hace una copia del formData para evitar cambios directos.
+    const eventDataToSubmit = { ...formData };
+
+    // Si hay un archivo, lo sube y asigna la URL al contenido.
+    if (file) {
+      const uploadResponse = await NovelService.uploadMedia(file);
+      if (uploadResponse.success && uploadResponse.data?.url) {
+        // Asigna la URL del archivo subido al campo 'content' del capítulo.
+        eventDataToSubmit.content = uploadResponse.data.url;
+      } else {
+        throw new Error(uploadResponse.message || 'Falló la subida del archivo.');
+      }
+    }
+
+    // Valida el contenido del capítulo.
+    if (!eventDataToSubmit.content) {
+      throw new Error('El contenido del capítulo no puede estar vacio.');
+    }
+
+
+    const response = await NovelService.updateChapter(novelId.toString(), chapterId.toString(), eventDataToSubmit);
     if (response.success) {
       const toast = await toastController.create({
         message: 'Capítulo actualizado correctamente.',

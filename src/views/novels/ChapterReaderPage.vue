@@ -1,6 +1,7 @@
 <template>
   <IonContent :fullscreen="true" class="ion-padding chapterReader">
-    <IonTitle>{{ 'Lector' }}</IonTitle>
+    <div class="readerContainer">
+      <IonTitle>{{ 'Lector' }}</IonTitle>
     <div v-if="isLoadingChapter" class="containerSpinner ion-text-center ion-padding-top">
       <IonSpinner name="crescent"></IonSpinner>
       <p>Cargando capítulo...</p>
@@ -46,6 +47,8 @@
           <IonIcon slot="end" :icon="arrowForwardCircleOutline"></IonIcon>
         </IonButton>
     </div>
+    </div>
+    
 
   </IonContent>>
 </template>
@@ -279,7 +282,7 @@ import ReadingService from '@/services/ReadingService';
 .imageContent  ion-img::part(image){ /*Asegura que la imagen se muestre correctamente*/
   display: block;
   width: 100%;
-  height: auto;
+  height: 20rem;
   object-fit: contain;
   border-radius: 4px;
 }
