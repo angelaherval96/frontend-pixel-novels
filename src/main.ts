@@ -39,6 +39,8 @@ import './theme/variables.css';
 
 // Swiper styles
 import 'swiper/css';
+import {register} from 'swiper/element/bundle';
+register(); // Registra los elementos de Swiper para que funcionen en Vue
 
 
 const app = createApp(App)

@@ -37,9 +37,9 @@ const emptyChapter: Partial<IChapter> = {
   order: 1
 };
 
-const sendForm = async (eventData: { formData: Partial<IChapter>, file?: File | null }) => {
+const sendForm = async (eventData: { formData: Partial<IChapter>, files?: File[] | null }) => {
   // Extrae de datos del evento
-  const { formData, file } = eventData;
+  const { formData, files } = eventData;
 
   if (!novelId) {
     alert("Error: No se ha encontrado el ID de la novela.");
@@ -53,11 +53,14 @@ const sendForm = async (eventData: { formData: Partial<IChapter>, file?: File | 
     // Crea una copia del formData para evitar cambios directos.
     const eventDataToSubmit = { ...formData };
 
-    // Si hay un archivo, lo sube y asigna la URL al contenido.
-    if (file) {
-      const uploadResponse = await NovelService.uploadMedia(file);
-      if (uploadResponse.success && uploadResponse.data?.url) {
-        eventDataToSubmit.content = uploadResponse.data.url;
+    // Si hay archivoa, lo sube y asigna la URL al contenido.
+    if (files && files.length > 0) {
+
+      eventDataToSubmit.content_type = 'image_sequence'; // Cambia el tipo de contenido a 'image_sequence' si hay archivos.
+      const uploadResponse = await NovelService.uploadMultipleMedia(files || []);
+     
+      if (uploadResponse.success && uploadResponse.data?.urls) {
+        eventDataToSubmit.content = JSON.stringify(uploadResponse.data.urls);//Guarda el array de URLs como string en el contenido.
       } else {
         throw new Error(uploadResponse.message || 'Falló la subida del archivo.');
       }
@@ -77,7 +80,7 @@ const sendForm = async (eventData: { formData: Partial<IChapter>, file?: File | 
         duration: 2000,
         color: 'success',
         position: 'top'
-      }).then(t => t.present());
+      });
       
       router.push({ name: 'ManageChaptersDashboard', params: { id: novelId } });
     } else {

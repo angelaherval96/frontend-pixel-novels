@@ -24,8 +24,11 @@
       </div>
         
 
-        <ChapterForm v-if="chapterToEdit" :initial-data="chapterToEdit" textButton="Actualizar Capítulo" :is-submitting="isSubmitting" @on-submit="sendForm"/>
+      <ChapterForm v-if="chapterToEdit" :initial-data="chapterToEdit" textButton="Actualizar Capítulo" :is-submitting="isSubmitting" @on-submit="sendForm"/>
       
+      <IonButton expand="block" color="medium" @click="router.push({ name: 'ManageChaptersDashboard', params: { id: novelId }})">
+       Cancelar
+      </IonButton>
     </IonContent>
     
    

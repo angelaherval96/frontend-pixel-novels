@@ -18,15 +18,25 @@
       </div>
 
       <!--Si el contenido es una imagen se muestran imágenes-->
-      <div v-else-if="currentChapterData.content_type === 'image' || currentChapterData.content_type === 'comic_page'" class="imageContent">
+      <div v-else-if="currentChapterData.content_type === 'image_sequence'" class="imageSequenceContainer">
+        <swiper-container :pagination="true">
+          <!-- Importación  del componente -->
+          <swiper-slide v-for="(imageUrl, index) in chapterImageUrls" :key="index">
+            <ion-img :src="imageUrl"></ion-img>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+
+      <!--Si el contenido es una imagen única se muestra una imagen-->
+      <div v-else-if="currentChapterData.content_type === 'image'" class="imageContent">
         <h2>{{ currentChapterData.title }}</h2>
-        <IonImg :src="currentChapterData.content" alt="Imagen del capítulo" @ion-error="onImageError"></IonImg>
+        <IonImg :src="mediaSource" @error="onImageError"></IonImg>
       </div>
 
       <!--Si el contenido es un video se muestra un reproductor de video-->
       <div v-else-if="currentChapterData.content_type === 'video'" class="videoContent">
         <h2>{{ currentChapterData.title }}</h2>
-        <video controls :src="currentChapterData.content" type="video/mp4" style="width: 100%; max-height: 80vh;">
+        <video controls :src="mediaSource" type="video/mp4" style="width: 100%; max-height: 80vh;">
           Tu navegador no soporta el elemento de video.
         </video>
       </div>
@@ -57,12 +67,13 @@
   import {  IonButton, IonContent, IonTitle , IonIcon, IonImg} from '@ionic/vue';
   import { alertCircleOutline, arrowForwardCircleOutline, arrowBackCircleOutline } from 'ionicons/icons';
   import { useRoute, useRouter } from 'vue-router';
-  import { ref, onMounted, watch, computed, normalizeClass } from 'vue';
+  import { ref, onMounted, watch, computed} from 'vue';
   import { useAuthStore } from '@/stores/useAuthStore';
   import { IChapter } from '@/interfaces/IChapter';
   import NovelService from '@/services/NovelService';
   import { all } from 'axios';
-import ReadingService from '@/services/ReadingService';
+  import ReadingService from '@/services/ReadingService';
+ 
 
   const route = useRoute();
   const router = useRouter();
@@ -79,6 +90,44 @@ import ReadingService from '@/services/ReadingService';
   const currentChapterId = ref<string | null>(null);
   const currentChapterData = ref<IChapter | null>(null);
   const isLoadingChapter = ref<boolean>(false);
+
+  //Procesa el content y devuelve la URL o URLs correctas según el tipo de contenido
+  const mediaSource = computed(() =>{
+    if (!currentChapterData.value?.content) {
+      return '';
+    }
+    
+    const {content} = currentChapterData.value;
+
+    try {
+      //Si el contenido es un string JSON, lo parsea
+      const parsedContent = JSON.parse(content);
+      //Si el contenido es un array de URLs, devuelve la primera URL(para vídeo o imagen única)
+      if (Array.isArray(parsedContent) && parsedContent.length > 0) {
+        return parsedContent[0];
+      }
+    }catch (error) {
+      //Si no es un string JSON, asume que es una URL directa
+      return content;
+    }
+    //Si es un JSON inválido o un array vacío, devuelve un string vacío
+    return '';
+
+  })
+
+  const chapterImageUrls = computed((): string[] => {
+    if (currentChapterData.value && currentChapterData.value.content_type === 'image_sequence'){
+      try{
+        //Parsea el string JSON de 'content' para obtener un array de URLs
+        const urls = JSON.parse(currentChapterData.value.content);
+        return Array.isArray(urls) ? urls : [];
+      }catch (error) {
+        console.error('Error al parsear el contenido de la secuencia de imágenes:', error);
+        return [];
+      }
+    }
+    return [];
+  });
 
   //Función para guardar el progreso de lectura
   const saveReadingProgress = async (chapterId: number, progressValue: number) => {
@@ -290,6 +339,7 @@ import ReadingService from '@/services/ReadingService';
   display: block;
   margin: 0 auto;
   max-width: 100%;
+  height: 20rem;
 }
 .navigationButtons {
   display: flex;
@@ -301,5 +351,20 @@ import ReadingService from '@/services/ReadingService';
 .navigationButtons span {
   font-size: 0.9em;
   color: var(--ion-color-medium-shade);
+}
+
+.imageSequenceContainer swiper-container {
+    width: 100%;
+    height: 100%; /* Ajusta según necesites */
+}
+.imageSequenceContainer swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.imageSequenceContainer ion-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 </style>
