@@ -6,6 +6,7 @@
       </IonToolbar>
       <IonToolbar color="primary">
         <IonButtons slot="start">
+          <IonButton :router-link="{name: 'Home'}">Volver</IonButton>
           <IonButton routerLink="/profile">Mi perfil</IonButton> 
           <IonButton routerLink="/profile/favourites">Favoritos</IonButton>
           <IonButton routerLink="profile/readings">Historial de Lectura</IonButton>

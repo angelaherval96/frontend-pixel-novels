@@ -10,4 +10,9 @@ export default class ReadingService {
         });
         return response.data;
     }
+    //Función para obtener el historial de lectura de un usuario.
+    static async getReading(): Promise<IApiResponse<{ readings: IReading[] }>> {
+        const response = await api.get<IApiResponse<{ readings: IReading[] }>>('/readings');
+        return response.data;
+    }
 }

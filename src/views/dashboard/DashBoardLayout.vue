@@ -6,6 +6,7 @@
       </IonToolbar>
       <IonToolbar color="primary">
         <IonButtons slot="start">
+          <IonButton :router-link="{name: 'Home'}">Volver</IonButton>
           <IonButton v-for="page in visibleAppPages" :key="page.url" :router-link="page.url">
             <IonIcon :icon="page.icon" slot="start"></IonIcon>
             {{ page.title }}

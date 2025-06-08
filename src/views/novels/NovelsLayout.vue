@@ -6,9 +6,10 @@
       </IonToolbar>
       <IonToolbar color="primary">
         <IonButtons slot="start">
+          <IonButton :router-link="{name: 'Home'}">Volver</IonButton>
           <IonButton routerLink="/novels">Lista de Novelas</IonButton> 
-          <IonButton routerLink="/novels/create">Crear Novela</IonButton>
-          <IonButton routerLink="/novels/create">Novelas Creadas</IonButton>
+          <IonButton :router-link="{name: 'Favourites'}">Favoritas</IonButton>
+          <IonButton :router-link="{name: 'Readings'}">Historial de Lecturas</IonButton>
         </IonButtons>
 
         <ion-searchbar :value="searchInput" @ionInput="onSearchInput" show-clear-button="always" :clear-icon="trashBin" placeholder="Buscar novelas..."></ion-searchbar>
