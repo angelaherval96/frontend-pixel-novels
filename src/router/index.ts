@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import HomePage from '../views/HomePage.vue'
 import ChapterReaderPage from '@/views/novels/ChapterReaderPage.vue';
-import CreateChapterPage from '@/views/novels/CreateChapterPage.vue';
-import CreateNovelPage from '@/views/novels/CreateNovelPage.vue';
+import CreateChapterPage from '@/views/dashboard/CreateChapterPage.vue';
+import CreateNovelPage from '@/views/dashboard/CreateNovelPage.vue';
 import FavouritesPage from '@/views/profile/FavouritesPage.vue';
 import LoginPage from '@/views/LoginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
@@ -15,7 +15,13 @@ import StatisticsPage from '@/views/StatisticsPage.vue';
 import SettingsPage from '@/views/profile/SettingsPage.vue';
 import NovelsLayout from '@/views/novels/NovelsLayout.vue';
 import ProfileLayout from '@/views/profile/ProfileLayout.vue';
+import DashBoardLayout from '@/views/dashboard/DashBoardLayout.vue';
+import ManageNovelPage from '@/views/dashboard/ManageNovelPage.vue';
+import UpdateNovelPage from '@/views/dashboard/UpdateNovelPage.vue';
+import UpdateChapterPage from '@/views/dashboard/UpdateChapterPage.vue';
 import { useAuthStore } from '@/stores/useAuthStore';
+import ManageUserPage from '@/views/dashboard/ManageUserPage.vue';
+import ManageChaptersPage from '@/views/dashboard/ManageChaptersPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -58,18 +64,6 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth:true }
       },
       {
-        path: 'create',
-        name: 'CreateNovel',
-        component: CreateNovelPage,
-        meta: { requiresAuth:true }
-      },
-      {
-        path: ':novelId/chapters/create',
-        name: 'CreateChapter',
-        component: CreateChapterPage,
-        meta: { requiresAuth:true }
-      },
-      {
         path: ':id/detail',
         name: 'NovelDetail',
         component: NovelDetailPage,
@@ -108,6 +102,58 @@ const routes: Array<RouteRecordRaw> = [
         path: 'settings',
         name: 'Settings',
         component: SettingsPage
+      }
+    ]
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: DashBoardLayout,
+    // Este guard verifica si el usuario es admin o creator antes de permitir el acceso a las rutas del dashboard
+    beforeEnter: (to, from, next) => {
+      const authStore = useAuthStore();
+      const userRole = authStore.user?.role;
+      if (authStore.isAuthenticated && (userRole === 'admin' || userRole === 'creator')) {
+        next(); // Permite el acceso si es admin o creator
+      }else {
+        next({ name: 'Home' }); // Redirige a Home si no es admin o creator
+      }
+    },
+    children: [
+      {
+        path: '',
+        name: 'DashboardNovels',
+        component: ManageNovelPage,
+      },
+      {
+        path: 'novel/create',
+        name: 'CreateNovelDashboard',
+        component: CreateNovelPage,
+      },
+      {
+        path: 'novel/:id/update',
+        name: 'UpdateNovelDashboard',
+        component: UpdateNovelPage,
+      },
+      {
+        path: 'novel/:id/chapters',
+        name: 'ManageChaptersDashboard',
+        component: ManageChaptersPage, 
+      },
+      {
+        path: 'novel/:id/chapters/create',
+        name: 'CreateChapterDashboard',
+        component: CreateChapterPage,
+      },
+      {
+        path: 'novel/:id/chapters/:chapterId/update',
+        name: 'UpdateChapterDashboard',
+        component: UpdateChapterPage,
+      },
+      {
+        path: 'users',
+        name: 'DashboardUsers',
+        component: ManageUserPage,
       }
     ]
   }
