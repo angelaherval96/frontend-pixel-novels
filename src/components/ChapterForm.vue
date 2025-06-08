@@ -22,10 +22,15 @@
         <IonTextarea label="Contenido del Capítulo" label-placement="floating" v-model="formData.content" :auto-grow="true" required></IonTextarea>
       </IonItem>
 
-      <IonItem v-else-if="formData.content_type === 'image' || formData.content_type === 'video' || formData.content_type === 'comic_page'">
-        <input type="file" label="URL del Contenido Multimedia" @change="fileChange" label-placement="floating" placeholder="https://example.com/imagen.jpg" accept="image/*,video/mp4" required></input>
-        <p v-if="formData.content" style="font-size: 0.8em; width: 100%;">URL actual: {{ formData.content }}</p>
-        <p v-if="selectedFile" style="font-size: 0.8em; width: 100%;">Archivo seleccionado: {{ selectedFile.name }}</p>
+      <!-- Campor para imagen o vídeo con múltiple selección-->
+      <IonItem v-else-if="['image', 'video', 'comic_page', 'image_sequence'].includes(formData.content_type || '')">">
+        <IonLabel position="stacked">Archivos Multimedia</IonLabel>
+        <input type="file" label="URL del Contenido Multimedia" @change="fileChange" label-placement="floating" placeholder="https://example.com/imagen.jpg" accept="image/*,video/mp4" required multiple></input>
+        <!-- Muestra información sobre los archivos seleccionados y una vista previa si hay archivos -->
+        <p v-if="selectedFiles.length > 0" class="fileInfo">{{ selectedFiles.length }} archivo(s) seleccionado(s).</p>
+        <div v-if="selectedFiles.length > 0" class="previewContainer">
+            <img v-for="(file, index) in selectedFiles" :key="index" :src="getFilePreviewUrl(file)" class="filePreview"/>
+        </div>
       </IonItem>
 
     </IonList>
@@ -40,7 +45,8 @@
 <script setup lang="ts">
 import { 
   IonList, IonItem, IonInput, IonTextarea, IonSelect, 
-  IonSelectOption, IonButton, IonSpinner 
+  IonSelectOption, IonButton, IonSpinner, 
+  IonLabel
 } from '@ionic/vue';
 import { ref, watch } from 'vue';
 import { IChapter } from '@/interfaces/IChapter'; 
@@ -58,35 +64,54 @@ const props = withDefaults(defineProps<{
 
 // El componente hijo emitirá un evento 'onSubmit' cuando el formulario se envíe.
 const emit = defineEmits<{
-  (event: 'onSubmit', eventData: {formData: Partial<IChapter>, file?: File | null}): void;
+  (event: 'onSubmit', eventData: {formData: Partial<IChapter>, files?: File[] | null}): void;
 }>();
 
 
 // 'formData' es una copia reactiva de los datos iniciales. 
 const formData = ref<Partial<IChapter>>({ ...props.initialData }); // Sintaxis de propagación para copiar los datos iniciales. Para que no se modifiquen las props del objeto padre directamente.
-const selectedFile = ref<File | null>(null); // Para almacenar el archivo seleccionado, si es necesario.
+const selectedFiles = ref<File[]>([]); // Para almacenar los archivos seleccionados.
 
 //Función para manejar el cambio de archivo.
 const fileChange = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
-    selectedFile.value = input.files[0]; // Almacena el archivo seleccionado.
-    formData.value.content = ''; // Resetea el contenido para evitar que se envíe la URL del objeto.
+    selectedFiles.value = Array.from(input.files); // Convierte FileList a un array de File.
     
   } else {
-    selectedFile.value = null; // Si no hay archivo, resetea el valor.
-    formData.value.content = ''; // Resetea el contenido si no hay archivo.
+    selectedFiles.value = []; // Si no hay archivo, resetea el valor.
+    
   }
+};
+
+// Función para obtener la URL de vista previa del archivo seleccionado.
+const getFilePreviewUrl = (file: File) => {
+    return URL.createObjectURL(file);
 };
 
 // Este 'watch' actualiza el formulario si los datos iniciales del padre cambian.
 watch(() => props.initialData, (newData) => {
   formData.value = { ...newData };
-  selectedFile.value = null; // Resetea el archivo seleccionado al cambiar los datos iniciales.
+  selectedFiles.value = []; // Resetea el archivo seleccionado al cambiar los datos iniciales.
 }, { deep: true, immediate: true });
 
 // Cuando el formulario se envía, emite el evento al padre.
 const sendForm = () => {
-  emit('onSubmit',{formData: formData.value, file: selectedFile.value});
+  emit('onSubmit',{formData: formData.value, files: selectedFiles.value});
 };
 </script>
+
+<style scoped>
+.previewContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.filePreview {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+</style>

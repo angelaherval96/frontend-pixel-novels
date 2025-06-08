@@ -90,4 +90,18 @@ export default class NovelService{
         return response.data;
     }
 
+    //Función para subir múltiples archivos multimedia
+    static async uploadMultipleMedia(files: File[]): Promise<IApiResponse<{ urls: string[] }>> {
+        const formData = new FormData();
+        //Itera sobre los archivos y los añade al FormData
+        files.forEach((file)=> {
+            formData.append(`media_files[]`, file); // 'media_files' es el nombre del campo que espera el backend
+        });
+        const response = await api.post<IApiResponse<{ urls: string[] }>>('/chapters/upload-multiple', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    }
 }  

@@ -42,7 +42,7 @@ const sendForm = async (dataNovel: INovel)=> {
     if (response.success){
       alert('¡Novela creada con éxito!');
       console.log(response.message);
-      router.push('/novels'); // Redirige a la lista de novelas,  pero revisar en un futuro para vista de novelas creadas
+      router.push({name: 'DashboardNovels'}); // Redirige a la lista de novelas,  pero revisar en un futuro para vista de novelas creadas
       dataNovel = {
         title: '',
         description: '',

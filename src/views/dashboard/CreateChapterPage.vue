@@ -37,36 +37,73 @@ const emptyChapter: Partial<IChapter> = {
   order: 1
 };
 
-const sendForm = async (eventData: { formData: Partial<IChapter>, file?: File | null }) => {
-  const { formData, file } = eventData;
+const sendForm = async (eventData: { formData: Partial<IChapter>, files?: File[] | null }) => {
+  // Extrae de datos del evento
+  const { formData, files } = eventData;
 
-  // --- MODO DEPURACIÓN ---
-  // El objetivo es ver qué responde el API cuando solo subimos el archivo.
+  if (!novelId) {
+    alert("Error: No se ha encontrado el ID de la novela.");
+    return;
+  }
 
-  if (file) {
-    console.log("--- INICIANDO DEPURACIÓN DE SUBIDA DE ARCHIVO ---");
-    console.log("Archivo que se va a subir:", file);
-    isSubmitting.value = true; // Para que se vea el spinner en el botón
+  isSubmitting.value = true;
+  let finalErrorMessage = 'Ocurrió un error inesperado al crear el capítulo.';
 
-    try {
-      const uploadResponse = await NovelService.uploadMedia(file);
-      
-      // ESTE ES EL LOG MÁS IMPORTANTE.
-      // Revisa la consola del navegador y expande este objeto para ver su contenido.
-      console.log("Respuesta COMPLETA del API de subida:", uploadResponse);
+  try {
+    // Crea una copia del formData para evitar cambios directos.
+    const eventDataToSubmit = { ...formData };
 
-      alert("Depuración finalizada. Por favor, revisa la consola del navegador (F12).");
+    // Si hay archivoa, lo sube y asigna la URL al contenido.
+    if (files && files.length > 0) {
 
-    } catch (error) {
-      console.error("El API de subida falló con un error:", error);
-      alert("La subida del archivo falló. Revisa la consola para ver el error del API.");
-    } finally {
-      isSubmitting.value = false; // Detenemos el spinner
-      console.log("--- FIN DE LA DEPURACIÓN ---");
+      eventDataToSubmit.content_type = 'image_sequence'; // Cambia el tipo de contenido a 'image_sequence' si hay archivos.
+      const uploadResponse = await NovelService.uploadMultipleMedia(files || []);
+     
+      if (uploadResponse.success && uploadResponse.data?.urls) {
+        eventDataToSubmit.content = JSON.stringify(uploadResponse.data.urls);//Guarda el array de URLs como string en el contenido.
+      } else {
+        throw new Error(uploadResponse.message || 'Falló la subida del archivo.');
+      }
     }
-
-  } else {
-    alert("Para depurar, por favor selecciona un archivo primero.");
+    
+    // Comprueba que el contenido del capítulo no esté vacío.
+    if (!eventDataToSubmit.content) {
+      throw new Error("El contenido del capítulo no puede estar vacío.");
+    }
+    
+    // Crea el capítulo utilizando el servicio.
+    const createResponse = await NovelService.createChapter(novelId.toString(), eventDataToSubmit);
+    
+    if (createResponse.success) {
+      await toastController.create({
+        message: '¡Capítulo creado con éxito!',
+        duration: 2000,
+        color: 'success',
+        position: 'top'
+      });
+      
+      router.push({ name: 'ManageChaptersDashboard', params: { id: novelId } });
+    } else {
+      throw new Error(createResponse.message || 'No se pudo crear el capítulo.');
+    }
+  } catch (error: any) {
+    // Manejo de errores para todo el proceso.
+    console.error('Error al crear el capítulo:', error);
+    // Si el error tiene una respuesta con errores de validación, los muestra.
+    if (error.response && error.response.data?.errors) {
+        const validationErrors = Object.values(error.response.data.errors).flat();
+        finalErrorMessage = validationErrors.join(' ');
+    } else {
+        finalErrorMessage = error.message;
+    }
+    await toastController.create({
+      message: finalErrorMessage,
+      duration: 4000,
+      color: 'danger',
+      position: 'top'
+    }).then(t => t.present());
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
