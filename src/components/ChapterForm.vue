@@ -23,7 +23,9 @@
       </IonItem>
 
       <IonItem v-else-if="formData.content_type === 'image' || formData.content_type === 'video' || formData.content_type === 'comic_page'">
-        <IonInput label="URL del Contenido Multimedia" label-placement="floating" v-model="formData.content" type="url" placeholder="https://example.com/imagen.jpg" required></IonInput>
+        <input type="file" label="URL del Contenido Multimedia" @change="fileChange" label-placement="floating" placeholder="https://example.com/imagen.jpg" accept="image/*,video/mp4" required></input>
+        <p v-if="formData.content" style="font-size: 0.8em; width: 100%;">URL actual: {{ formData.content }}</p>
+        <p v-if="selectedFile" style="font-size: 0.8em; width: 100%;">Archivo seleccionado: {{ selectedFile.name }}</p>
       </IonItem>
 
     </IonList>
@@ -56,21 +58,35 @@ const props = withDefaults(defineProps<{
 
 // El componente hijo emitirá un evento 'onSubmit' cuando el formulario se envíe.
 const emit = defineEmits<{
-  (event: 'onSubmit', formData: Partial<IChapter>): void;
+  (event: 'onSubmit', eventData: {formData: Partial<IChapter>, file?: File | null}): void;
 }>();
 
 
 // 'formData' es una copia reactiva de los datos iniciales. 
 const formData = ref<Partial<IChapter>>({ ...props.initialData }); // Sintaxis de propagación para copiar los datos iniciales. Para que no se modifiquen las props del objeto padre directamente.
+const selectedFile = ref<File | null>(null); // Para almacenar el archivo seleccionado, si es necesario.
 
+//Función para manejar el cambio de archivo.
+const fileChange = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    selectedFile.value = input.files[0]; // Almacena el archivo seleccionado.
+    formData.value.content = ''; // Resetea el contenido para evitar que se envíe la URL del objeto.
+    
+  } else {
+    selectedFile.value = null; // Si no hay archivo, resetea el valor.
+    formData.value.content = ''; // Resetea el contenido si no hay archivo.
+  }
+};
 
 // Este 'watch' actualiza el formulario si los datos iniciales del padre cambian.
 watch(() => props.initialData, (newData) => {
   formData.value = { ...newData };
+  selectedFile.value = null; // Resetea el archivo seleccionado al cambiar los datos iniciales.
 }, { deep: true, immediate: true });
 
 // Cuando el formulario se envía, emite el evento al padre.
 const sendForm = () => {
-  emit('onSubmit', formData.value);
+  emit('onSubmit',{formData: formData.value, file: selectedFile.value});
 };
 </script>

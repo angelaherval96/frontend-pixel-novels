@@ -8,7 +8,7 @@
     </IonHeader>
     <IonContent class="ion-padding">
       <div class="container">
-        <ChapterForm :initial-data="emptyChapter" textButton="Crear Capítulo" :is-submitting="isSubmitting" @on-submit="sendForm"/>
+        <ChapterForm :initial-data="emptyChapter" textButton="Crear Capítulo" :is-submitting="isSubmitting" @onSubmit="sendForm"/>
       </div>
      
     </IonContent>
@@ -37,42 +37,40 @@ const emptyChapter: Partial<IChapter> = {
   order: 1
 };
 
-const sendForm = async (formData: Partial<IChapter>) => {
+const sendForm = async (eventData: { formData: Partial<IChapter>, file?: File | null }) => {
+  const { formData, file } = eventData;
 
-  if (!novelId) {
-    console.error('No se ha encontrado el ID de la novela.');
-    return;
-  }
-  isSubmitting.value = true;
+  // --- MODO DEPURACIÓN ---
+  // El objetivo es ver qué responde el API cuando solo subimos el archivo.
 
-  try {
-    const response = await NovelService.createChapter(novelId.toString(), formData);
-    if (response.success) {
-      const toast = await toastController.create({
-        message: 'Capítulo creado correctamente.',
-        duration: 2000,
-        position: 'top',
-        color: 'success'
-      });
-      await toast.present();
+  if (file) {
+    console.log("--- INICIANDO DEPURACIÓN DE SUBIDA DE ARCHIVO ---");
+    console.log("Archivo que se va a subir:", file);
+    isSubmitting.value = true; // Para que se vea el spinner en el botón
 
-      router.push({ name: 'ManageChaptersDashboard', params: { id: novelId }});
-    }else{
-      throw new Error(response.message || 'No se pudo crear el capítulo.');
+    try {
+      const uploadResponse = await NovelService.uploadMedia(file);
+      
+      // ESTE ES EL LOG MÁS IMPORTANTE.
+      // Revisa la consola del navegador y expande este objeto para ver su contenido.
+      console.log("Respuesta COMPLETA del API de subida:", uploadResponse);
+
+      alert("Depuración finalizada. Por favor, revisa la consola del navegador (F12).");
+
+    } catch (error) {
+      console.error("El API de subida falló con un error:", error);
+      alert("La subida del archivo falló. Revisa la consola para ver el error del API.");
+    } finally {
+      isSubmitting.value = false; // Detenemos el spinner
+      console.log("--- FIN DE LA DEPURACIÓN ---");
     }
-  } catch (error:any) {
-    const toast = await toastController.create({
-      message: error.message || 'Error al crear el capítulo.',
-      duration: 2000,
-      position: 'top',
-      color: 'danger'
-    });
-    await toast.present();
-    console.error('Error al crear el capítulo:', error);
-  } finally {
-    isSubmitting.value = false;
+
+  } else {
+    alert("Para depurar, por favor selecciona un archivo primero.");
   }
 };
+
+
 </script>
 <style scoped>
 .container {
