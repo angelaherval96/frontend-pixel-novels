@@ -2,13 +2,13 @@
     <IonContent :fullscreen="true" class="ion-padding">
       <h1>Crear Nueva Novela</h1>
       <br>
-      <NovelForm :initialData="dataNovel" textButton="Crear Novela" @onSubmit="sendForm"></NovelForm>
+      <NovelForm :initialData="emptyNovel" textButton="Crear Novela" @onSubmit="sendForm"></NovelForm>
     </IonContent>
   
 </template>
 
 <script setup lang="ts">
-import { IonContent } from '@ionic/vue';
+import { IonContent, toastController } from '@ionic/vue';
 import NovelService from '@/services/NovelService';
 import { INovel } from '@/interfaces/INovel';
 import { ref } from 'vue';
@@ -16,7 +16,7 @@ import { useRouter } from 'vue-router';
 import { IApiResponse } from '@/interfaces/IApiResponse';
 import NovelForm from '@/components/NovelForm.vue';
 // Creamos una variable que almanecenará los datos de la novela
-const dataNovel = ref<INovel>({
+const emptyNovel = ref<INovel>({
   title: '',
   description: '',
   language: '',
@@ -27,28 +27,61 @@ const router = useRouter();
 const isLoading = ref<boolean>(false); 
 
 //Función que se ejecuta al enviar el formulario.
-const sendForm = async (dataNovel: INovel)=> {
-  //Se valida el título y la portada para que no estén vacíos
-  if (!dataNovel.title || !dataNovel.cover){
-    console.error('Error: El título y la portada son obligatorios.');
-    return;
-  }
-
+const sendForm = async (eventData: {dataNovel: Partial<INovel>, coverFileUpload?: File | null})=> {
+  // Extrae los datos del evento
+  const { dataNovel, coverFileUpload: coverFile } = eventData;
   isLoading.value = true; // Cambia el estado de carga a verdadero
+
   try {
+    //Copia de los datos del formulario
+    const eventDataToSubmit: Partial<INovel> = ({...dataNovel});
+    
+    if (!coverFile) {
+      await toastController.create({
+        message: 'Por favor, sube una imagen de portada.',
+        duration: 2000,
+        position: 'top',
+        color: 'warning'
+      });
+      isLoading.value = false; // Cambia el estado de carga a falso si no hay archivo
+      return; // Sale de la función si no hay archivo de portada
+    }
+   
+    const uploadResponse = await NovelService.uploadCoverImage(coverFile);
+    if (uploadResponse.success && uploadResponse.data?.url) {
+      // Si la subida es exitosa, asigna la URL de la imagen al objeto de datos
+      eventDataToSubmit.cover = uploadResponse.data.url; // Asigna la URL de la imagen subida
+      console.log('Imagen de portada subida correctamente:', eventDataToSubmit.cover);
+    } else {
+      // Si hay un error en la subida, muestra un mensaje y sale de la función
+      await toastController.create({
+        message: 'Error al subir la imagen de portada: ' + uploadResponse.message,
+        duration: 2000,
+        position: 'top',
+        color: 'danger'
+      });
+      isLoading.value = false; // Cambia el estado de carga a falso si hay error
+      return;
+    }
+
+
+    //Comprueba que esten todos los campos obligatorios del formulario
+    if (!eventDataToSubmit.title && !eventDataToSubmit.language && !eventDataToSubmit.description && !eventDataToSubmit.cover) {
+      throw new Error('La portada es obligatoria. Por favor, sube una imagen de portada.');
+    }
+
     //Llama al servicio para crear la novela, pasando los datos del formulario
-    const response = await NovelService.createNovel(dataNovel);
+    const response = await NovelService.createNovel(eventDataToSubmit as INovel); // Se utiliza el tipo INovel para asegurar que los datos cumplen con la interfaz
     //Si la respuesta es correcta se limpia el formulario y se redirige a la lista de novelas
     if (response.success){
-      alert('¡Novela creada con éxito!');
-      console.log(response.message);
+      await toastController.create({
+        message: 'Novela creada correctamente.',
+        duration: 2000,
+        position: 'top',
+        color: 'success'
+      });
+
       router.push({name: 'DashboardNovels'}); // Redirige a la lista de novelas,  pero revisar en un futuro para vista de novelas creadas
-      dataNovel = {
-        title: '',
-        description: '',
-        language: '',
-        cover: ''
-      };
       
       //Si no muestra un error
     }else {
@@ -79,7 +112,15 @@ const sendForm = async (dataNovel: INovel)=> {
     //Si no hay respuesta del servidor, se muestra esta alerta
     alert('Error de conexión o respuesta no recibida del servidor.');
   }
+  } finally {
+    isLoading.value = false; // Cambia el estado de carga a falso al finalizar
+
 
   }
+ 
+  
+  
+
+  
 }
 </script>
