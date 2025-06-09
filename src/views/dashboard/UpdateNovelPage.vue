@@ -57,23 +57,58 @@ const loadNovelData = async () => {
 }
 
 //Función que se ejecuta al enviar el formulario.
-const sendForm = async (dataNovel: INovel)=> {
+const sendForm = async (eventData: {dataNovel: Partial<INovel>, coverFileUpload?: File | null})=> {
+  if (!novelId) {
+    await toastController.create({
+      message: 'No se encontró el ID de la novela.',
+      duration: 2000,
+      position: 'top',
+      color: 'danger'
+    });
+    return;
+  }
+  
+  const { dataNovel, coverFileUpload: coverFile } = eventData;
   isSubmitting.value = true; // Cambia el estado de envío a verdadero
   
   try {
+    //Copia de los datos del formulario
+    const eventDataToSubmit: Partial<INovel> = ({...dataNovel});
+
+    if (coverFile) {
+      // Si hay un archivo seleccionado, lo sube
+      const uploadResponse = await NovelService.uploadCoverImage(coverFile);
+      if (uploadResponse.success && uploadResponse.data?.url) {
+        // Si la subida es correcta, asigna la URL de la imagen al objeto de datos
+        eventDataToSubmit.cover = uploadResponse.data.url; // Asigna la URL de la imagen subida
+        console.log('Imagen de portada subida correctamente:', eventDataToSubmit.cover);
+      } else {
+        // Si hay un error en la subida, muestra un mensaje y sale de la función
+        await toastController.create({
+          message: 'Error al subir la imagen de portada: ' + uploadResponse.message,
+          duration: 2000,
+          position: 'top',
+          color: 'danger'
+        });
+        isSubmitting.value = false; // Cambia el estado de envío a falso si hay error
+        return;
+      }
+    } else {
+      eventDataToSubmit.cover = novelToEdit.value?.cover || ''; // Mantiene la portada actual si no se sube una nueva
+    }
     //Llama al servicio para actualizar la novela, pasando los datos del formulario
-    const response = await NovelService.updateNovel(novelId.toString(), dataNovel);
+    const response = await NovelService.updateNovel(novelId.toString(), eventDataToSubmit as INovel);
     //Si la respuesta es correcta se limpia el formulario y se redirige a la lista de novelas
     if (response.success){
       const toast = await toastController.create({
-        message: '¡Novela actualizada con éxito!',
+        message: 'Novela actualizada correctamente.',
         duration: 2000,
         position: 'top',
         color: 'success'
       });
       await toast.present();
       console.log(response.message);
-      router.push(`/dashboard/novels`); // Redirige a la página del dasboard de novelas
+      router.push({name: 'DashboardNovels'});
       novelToEdit.value = null; // Limpia los datos de la novela para evitar reenvíos accidentales
     
       //Si no muestra un error

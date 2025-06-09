@@ -104,4 +104,17 @@ export default class NovelService{
         });
         return response.data;
     }
+
+    //Función para subir una imagen de portada para una novela
+    static async uploadCoverImage(file: File): Promise<IApiResponse<{ url: string }>> {
+        //Se usa FormData para enviar archivos
+        const formData = new FormData();
+        formData.append('cover_file', file); // 'cover_file' es el nombre del campo que espera el backend
+        const response = await api.post<IApiResponse<{ url: string }>>('/novels/upload-cover', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    }
 }  

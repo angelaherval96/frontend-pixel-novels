@@ -9,7 +9,7 @@
     <div v-if="loading" class="cargandoNovelas">
       <p>Cargando novelas...</p>
     </div>
-    <div v-else-if="!loading && novels.novels.length === 0" class="no-novels">
+    <div v-else-if="!loading && novels.novels.length === 0" class="noNovels">
       <p>No hay novelas disponibles.</p>
     </div>
   </IonContent>
@@ -74,3 +74,16 @@ onMounted(async () => {
 });
 
 </script>
+
+<style scoped>
+.novelas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.cargandoNovelas {
+  text-align: center;
+  margin-top: 20px;
+}
+
+</style>
