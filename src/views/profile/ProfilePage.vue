@@ -4,7 +4,7 @@
       <IonCard class="card">
         <IonItem lines="none" class="avatarItem">
           <IonAvatar slot="start" class="avatar">
-            <img src="" alt="Foto de perfil">
+            <img :src="user.avatar_url || 'http://localhost:8000/storage/avatars/niño.jpg'" alt="Foto de perfil">
           </IonAvatar>
           <IonLabel>
             <h2><strong>{{ user.name }}</strong></h2>
