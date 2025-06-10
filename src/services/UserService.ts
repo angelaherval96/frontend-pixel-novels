@@ -16,5 +16,11 @@ export default class UserService {
         return response.data;
     }
 
+    //Función para enviar la url del avatar y actualizar el usuario
+    static async setUserAvatar(avatarUrl: string): Promise<IApiResponse<{user: IUser}>> {
+        const response = await api.post<IApiResponse<{user: IUser}>>('/user/avatar', { avatar_url: avatarUrl });
+        return response.data;
+    }
+
     
 }

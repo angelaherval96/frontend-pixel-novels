@@ -19,6 +19,7 @@ export const useAuthStore = defineStore('auth', {
     isUserAuthenticated: (state) => state.isAuthenticated,
   },
   actions: {
+
     //Acción para inicializar el store y cargar el token guardado
     async init() {
       const storage = new Storage();
@@ -121,7 +122,7 @@ export const useAuthStore = defineStore('auth', {
     async updateUserProfile(profileData: { name?: string; email?: string }) {
         if (!this.isAuthenticated) throw new Error("Usuario no autenticado.");
         try {
-            const response = await api.put('/user/profile', profileData);
+            const response = await api.put('/user', profileData);
             if (response.data.success && response.data.data.user) {
                 this.user = response.data.data.user;
                 return response.data.data.user;
@@ -131,6 +132,11 @@ export const useAuthStore = defineStore('auth', {
             console.error('Error al actualizar el perfil:', error.response?.data?.message || error.message);
             throw error;
         }
+    },
+    //Acción para actualizar el objeto del usuario en el estado del store al actualizar el perfil/avatar
+    setUser(newUser: IUser | null) {
+      this.user = newUser;
     }
+
   }
 });
