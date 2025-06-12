@@ -4,8 +4,8 @@
             <ion-card-header>
             <ion-card-title>Tendencias</ion-card-title>
             </ion-card-header>
-            <ion-card-content>
-            <swiper :initialSlide=0 :speed=400 :slidesPerView=1.2 :spaceBetween=10 :centeredSlides=true pager="true">
+            <ion-card-content class="container">
+            <swiper :initialSlide=0 :speed=400 :slidesPerView=1.2 :spaceBetween=10 :centeredSlides=true pager="true" class="container">
                 <swiper-slide v-for="(novel, idx) in props.novels" :key="novel.id">
                     <ion-card :style="{ backgroundColor: colors[idx % colors.length] }">
                         <ion-card-header>
@@ -14,7 +14,7 @@
                         <ion-card-content>
                         {{ novel.description }}
                         {{ novel.language }}
-                        <img :src="novel.cover" alt="Cover" style="width: 100%; height: auto; border-radius: 10px;">
+                        <img :src="novel.cover" alt="Cover">
                         </ion-card-content>
                     </ion-card>
                 </swiper-slide>
@@ -52,12 +52,25 @@ const colors = ['#ffe082', '#b3e5fc', '#c8e6c9', '#f8bbd0'];
 <style scoped>
     ion-card-title{
         color: var(--ion-color-primary);
+        font-weight: bold;
     }
     .tendencias{
         width: 80%;
-        height: 30%;
+        height: 100%;
         margin: 0 auto;
         border-radius: 18px;
         box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
+    .container{
+        height: 30rem;
+    }
+    ion-card-content img{
+        padding: 16px;
+        height: 20rem;
+        width: 100%;
+        border-radius: 20px;
+    }
+    ion-card-content{
+        color: black;
     }
 </style>

@@ -9,8 +9,8 @@
           <IonButton :router-link="{name: 'Home'}">Volver</IonButton>
           <IonButton routerLink="/profile">Mi perfil</IonButton> 
           <IonButton routerLink="/profile/favourites">Favoritos</IonButton>
-          <IonButton routerLink="profile/readings">Historial de Lectura</IonButton>
-          <IonButton routerLink="profile/settings">Configuración</IonButton>
+          <IonButton routerLink="/profile/readings">Historial de Lectura</IonButton>
+          <IonButton routerLink="/profile/settings">Configuración</IonButton>
           <IonButton @click="closeSesion">Cerrar Sesión</IonButton>
         </IonButtons>
       </IonToolbar>

@@ -1,9 +1,10 @@
 <template>
   <ion-app>
-      <ion-menu content-id="main-content">
+      <ion-menu content-id="main-content" side="end">
       <ion-header>
         <ion-toolbar color="primary">
           <ion-title>Pixel Novels</ion-title>
+
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
@@ -24,10 +25,8 @@
     <ion-page id="main-content">
       <ion-header>
         <ion-toolbar color="secondary">
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>Pixel Novels</ion-title>
+         
+           <img src="/images/logoFinal.png" alt="Logo" style="width: 80px; height: 80px; margin-left: 10px;" />
 
           <IonButtons slot="end" v-if="authStore.isAuthenticated && authStore.user">
             <IonChip color="text" class="ion-margin-end" :routerLink="{name: 'Profile' }">
@@ -37,7 +36,11 @@
               <IonLabel>{{ authStore.user.name }}</IonLabel>
             </IonChip>
           </IonButtons>
-            
+
+          <ion-buttons slot="end">
+            <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding"> 
@@ -53,6 +56,7 @@
   import { IonApp, IonButtons, IonContent, IonHeader, IonMenu, IonMenuButton, IonPage, IonTitle, IonToolbar, IonRouterOutlet, IonChip, IonLabel, IonAvatar } from '@ionic/vue';
   import FooterBar from './components/FooterBar.vue';
   import { useAuthStore } from '@/stores/useAuthStore';
+  
 
   const authStore = useAuthStore();
   

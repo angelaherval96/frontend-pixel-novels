@@ -182,4 +182,25 @@ onMounted(() => {
   margin-bottom: 25px;
 
 }
+ion-img {
+  width: 20rem;
+  height: 20rem;
+  border-radius: 8px;
+}
+ion-list {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  
+}
+ion-card {
+  background-color: var(--ion-color-background);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 </style>
