@@ -29,7 +29,7 @@
         <IonItemSliding v-for="user in users" :key="user.id">
           <IonItem>
             <IonAvatar slot="start">
-              <IonImg :src="'assets/images/banner.jpeg'" alt="Avatar de usuario"></IonImg>
+              <IonImg :src="user.avatar_url || 'http://localhost:8000/storage/avatars/niño.png'" alt="Avatar de usuario"></IonImg>
             </IonAvatar>
 
             <IonLabel>

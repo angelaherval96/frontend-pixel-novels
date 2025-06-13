@@ -1,9 +1,9 @@
 <template>
   <IonPage>
     <IonHeader>
-      <IonToolbar>
+      <!-- <IonToolbar>
         <IonTitle>Perfil de {{ authStore.currentUser?.name || '' }}</IonTitle>
-      </IonToolbar>
+      </IonToolbar> -->
       <IonToolbar color="primary">
         <IonButtons slot="start">
           <IonButton :router-link="{name: 'Home'}">Volver</IonButton>

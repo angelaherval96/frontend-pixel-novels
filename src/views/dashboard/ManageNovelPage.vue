@@ -11,7 +11,7 @@
     </IonHeader>
 
     <IonContent :fullscreen="true" class="ion-padding">
-      <div class="ion-padding-top ion-margin-top containerButton">
+      <div class="  containerButton">
           <IonButton router-link="/dashboard/novel/create" color="medium" expand="block">
             <IonIcon slot="icon-only" :icon="addCircleOutline"></IonIcon>
             Crear Nueva
@@ -177,8 +177,6 @@ onMounted(() => {
   padding-top: 8px;
 }
 .containerButton {
- 
-  margin-top: 50px;
   margin-bottom: 25px;
 
 }
