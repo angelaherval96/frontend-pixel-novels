@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonTitle, IonContent, IonBackButton, IonButtons, IonSpinner, IonIcon, IonButton, IonImg, IonCard, IonCardContent, IonList, IonItem, IonLabel } from '@ionic/vue';
+import { IonTitle, IonContent, IonBackButton, IonButtons, IonSpinner, IonIcon, IonButton, IonImg, IonCard, IonCardContent, IonList, IonItem, IonLabel, toastController } from '@ionic/vue';
 import { alertCircleOutline, playCircleOutline, heartOutline } from 'ionicons/icons';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -136,13 +136,25 @@ const addToFavourites = async (idNovela:number) => {
   try {
     const apiResponse = await FavouriteService.addNovelFavourites(idNovela.toString());
     if (apiResponse.success){
-      alert(apiResponse.message || '¡Añadido a favoritos!');
+      const toast = await toastController.create({
+        message: 'Añadido a favoritos correctamente.',
+        duration: 2000,
+        position: 'top',
+        color: 'success'
+      });
+      await toast.present();
     }else{
       throw new Error(apiResponse.message || 'Error al añadir a favoritos.');
     }
   } catch (error:any) {
     console.error("Error adding to favourites:", error);
-    alert(`Error: ${error.message}`);
+    const toast = await toastController.create({
+      message: error.message || 'Error al añadir a favoritos.',
+      duration: 3000,
+      position: 'top',
+      color: 'danger'
+    });
+    await toast.present();
 
   }finally{
     isFavoriting.value = false;

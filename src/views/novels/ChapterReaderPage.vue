@@ -355,7 +355,7 @@
 
 .imageSequenceContainer swiper-container {
     width: 100%;
-    height: 100%; /* Ajusta según necesites */
+    height: 100%;
 }
 .imageSequenceContainer swiper-slide {
     display: flex;
@@ -364,7 +364,6 @@
 }
 .imageSequenceContainer ion-img {
     max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    height: 40rem;
 }
 </style>

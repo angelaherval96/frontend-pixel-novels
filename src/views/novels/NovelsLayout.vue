@@ -1,9 +1,6 @@
 <template>
   <IonPage>
     <IonHeader>
-      <IonToolbar>
-        <IonTitle>Gestión de Novelas</IonTitle>
-      </IonToolbar>
       <IonToolbar color="primary">
         <IonButtons slot="start">
           <IonButton :router-link="{name: 'Home'}">Volver</IonButton>

@@ -11,8 +11,8 @@
       <IonButton @click="loadFavourites">Reintentar</IonButton>
     </div>
 
-    <div v-if="!isLoading && favourites.length === 0 && !error" class="empty-state">
-      <IonIcon :icon="heartDislikeCircleOutline" class="empty-icon"></IonIcon>
+    <div v-if="!isLoading && favourites.length === 0 && !error" class="emptyState">
+      <IonIcon :icon="heartDislikeCircleOutline" class="emptyIcon"></IonIcon>
       <h3>Aún no tienes favoritos</h3>
       <p>Explora el catálogo y añade las novelas que más te gusten.</p>
       <IonButton router-link="/novels" expand="block" color="primary">Ir al Catálogo</IonButton>
@@ -112,15 +112,15 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.empty-state {
-  margin-top: 25%;
+.emptyState {
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
 }
 
-.empty-icon {
+.emptyIcon {
     font-size: 4em; 
     color: var(--ion-color-medium);
 }
