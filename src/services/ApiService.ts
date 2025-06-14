@@ -3,7 +3,7 @@ import { Storage } from '@ionic/storage';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api', //URL del backend
-  withCredentials: false, //Poner true si se necesitan cookies
+  withCredentials: true, //Poner true si se necesitan cookies
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
