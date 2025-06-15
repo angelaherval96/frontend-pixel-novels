@@ -14,7 +14,7 @@
           <router-link :to="{name:'Register'}">Registro</router-link>
           <!-- <router-link :to="{name:'Profile'}">Perfil</router-link> -->
           <router-link :to="{name:'Novels'}">Novelas</router-link>
-          <router-link :to="{name:'Statistics'}">Estadísticas</router-link>
+          <!-- <router-link :to="{name:'Statistics'}">Estadísticas</router-link> -->
           <!-- <router-link :to="{name:'Settings'}">Configuración</router-link> -->
 
           <!-- Enlace condicional para que solo se muestre si el usuario es administrador o creador: -->
