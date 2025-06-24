@@ -10,11 +10,12 @@ Este repositorio contiene la aplicación cliente para el proyecto Pixel Novels, 
 - Panel de Creación: Interfaz para que los creadores puedan gestionar sus obras.
 
 ## 📸 Capturas de Pantalla
-Catálogo de Novelas	Lector de Capítulos	Perfil de Usuario
-
+| Inicio | Catálogo de Novelas | Detalles de la Novela | Lector de Capítulos | Historial de Lectura | Perfil de Usuario |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|![Inicio](assets/inicio.png) | ![Catálogo de Novelas de Pixel Novels](assets/listaNovelas.png) | ![Detalles de la Novela](assets/detallesNovela.png) | ![Lector de Capítulos de Pixel Novels](assets/lector1.png) | ![Historial de Lectura](assets/historialLectura.png) | ![Perfil de Usuario](assets/perfil.png) |
 
 ## 🛠️ Tecnologías Utilizadas
-- Frameworks: Ionic Framework y Vue.js 
+- Frameworks: Ionic y Vue.js 
 - Lenguajes: TypeScript y JavaScript
 - Herramientas de Build: Vite
 - Estilos: HTML5 y CSS3
